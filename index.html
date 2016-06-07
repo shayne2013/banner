@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        html, body, ul, li, a, div {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .content {
+            border: 1px solid #ccc;
+            width: 500px;
+            height: 300px;
+            margin: 50px auto;
+            overflow: hidden;
+            position: relative;
+            /*border: 5px solid #000000;*/
+        }
+
+        .content .img ul {
+            width: 2500px;
+            height: 300px;
+            position: relative;
+        }
+
+        .content .img ul li {
+            display: inline-block;
+            float: left;
+        }
+
+        .content .img ul li a img {
+            width: 500px;
+            height: 300px;
+        }
+
+        .btn a {
+            width: 30px;
+            height: 60px;
+            line-height: 60px;
+            background: #333;
+            opacity: 0.5;
+            color: #fff;
+            display: inline-block;
+            position: absolute;
+            text-align: center;
+            font-weight: 600;
+            font-size: 150%;
+            cursor: pointer;
+            display: none;
+        }
+
+        .prev_btn {
+            left: 0px;
+            top: 50%;
+            margin-top: -30px;
+        }
+
+        .next_btn {
+            right: 0px;
+            top: 50%;
+            margin-top: -30px;
+        }
+
+        .circle {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+        }
+
+        .circle li {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+            border-radius: 15px;
+            background: #ccc;
+            color: #fff;
+            text-align: center;
+            margin: 0 2px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+<div class="content">
+    <div class="img">
+        <ul>
+            <li><a href="http://www.google.com" target="_blank"><img src="images/1.1.png" alt="1"></a></li>
+            <li><a href="http://www.google.com" target="_blank"><img src="images/2.2.png" alt="2"></a></li>
+            <li><a href="http://www.google.com" target="_blank"><img src="images/3.3.png" alt="3"></a></li>
+            <li><a href="http://www.google.com" target="_blank"><img src="images/4.4.png" alt="4"></a></li>
+            <li><a href="http://www.google.com" target="_blank"><img src="images/5.5.png" alt="5"></a></li>
+        </ul>
+    </div>
+    <div class="btn">
+        <a class="prev_btn"><</a>
+        <a class="next_btn">></a>
+    </div>
+    <ul class="circle"></ul>
+</div>
+<script type="text/javascript" src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+<script>
+    var x = 0;
+
+    //    向左滑动函数
+    function scrollL() {
+        x++;
+        if (x > 4) {
+            x = 0;
+        }
+        console.log(x);
+        $(".img ul").animate({left: "-500px"}, 100, function () {
+            $(this).css("left", "0px");
+            $(".img ul li:first").appendTo(".img ul");
+            $(".circle li:eq(" + x + ")").css("background", "#ff0000").siblings().css("background", "#ccc");
+        });
+    }
+
+    //    向右滑动函数
+    function scrollR() {
+        x--;
+        if (x < 0) {
+            x = 4;
+        }
+        console.log(x);
+        $(".circle li:eq(" + x + ")").css("background", "#ff0000").siblings().css("background", "#ccc");
+        $(".img ul").css("left", "-500px");
+        $(".img ul li:last").prependTo(".img ul");
+        $(".img ul").animate({left: "0px"}, 100);
+    }
+
+
+    //左箭头，右箭头调用函数事件
+    $(".next_btn").click(function () {
+        scrollL();
+    });
+    $(".prev_btn").click(function () {
+        scrollR();
+    });
+
+    //轮播小数字的加入
+    var imgNum = $(".img ul li").length - 1;
+    var cir = "<li class='selected'>1</li>";
+    for (var i = 0; i < imgNum; i++) {
+        var cirNumber = i + 2;
+        cir += "<li class='selected'>" + cirNumber + "</li>";
+    }
+    $(".circle").append(cir);
+    var cirLength = $(".circle").width();
+    var cirLen = -cirLength / 2;
+    $(".circle").css("marginLeft", '' + cirLen + 'px');
+    $(".circle li:first").css("background", "#ff0000");
+
+    //    鼠标移入小数字的事件
+    $(".circle li").mouseenter(function () {
+        var number = $(this).index();
+        $(".circle li:eq(" + number + ")").css("background", "#ff0000").siblings().css("background", "#ccc");
+        if (number > x) {
+            var distance = number - x;
+            for (var f = 0; f < distance; f++) {
+                scrollL();
+            }
+        }
+        if (number < x) {
+            var distance = x - number;
+            for (var f = 0; f < distance; f++) {
+                scrollR();
+            }
+        }
+    });
+
+    //    自动轮播/鼠标移入移出的事件
+    var int = setInterval("scrollL()", 2000);
+    $(".content").hover(function () {
+                clearInterval(int);
+                $(".btn a").fadeIn();
+            }, function () {
+                int = setInterval("scrollL()", 2000);
+                $(".btn a").fadeOut();
+            }
+    );
+</script>
+</body>
+</html>
